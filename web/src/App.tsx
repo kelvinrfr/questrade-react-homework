@@ -1,5 +1,7 @@
 import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
+import { useFormik } from 'formik';
+import * as yup from 'yup';
 import React from 'react';
 
 const style = {
@@ -14,17 +16,23 @@ const style = {
   p: 4,
 };
 
+const validationSchema = yup.object({
+  name: yup.string().min(3, 'Must be at least 3 characters').required('Name is required'),
+  prize: yup.string().min(3, 'Must be at least 3 characters').required('Prize is required'),
+});
+
 function App() {
   const [open, setOpen] = React.useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const [lotteryName, setLotteryName] = React.useState("");
-  const [lotteryPrize, setLotteryPrize] = React.useState("");
-
-  const handleNewLottery = () => {
-    console.log(`These are the values: ${lotteryName}, ${lotteryPrize}`);
-  }
+  const formik = useFormik({
+    initialValues: { name: '', prize: '' },
+    validationSchema,
+    onSubmit: (values) => {
+      console.log(`These are the values: ${values.name}, ${values.prize}`);
+    },
+  });
 
   return (
     <>
@@ -45,10 +53,7 @@ function App() {
             sx={style}
             component="form"
             autoComplete="off"
-            onSubmit={(e: React.SubmitEvent) => {
-              e.preventDefault();
-              handleNewLottery();
-            }}>
+            onSubmit={formik.handleSubmit}>
 
             <Typography id="modal-modal-title" variant="h6" component="h2">
               Add new lottery 
@@ -58,26 +63,28 @@ function App() {
             </Typography>
             <Stack spacing={2} sx={{ mt: 2}}>
               <TextField 
-                required
                 label="Lottery name" 
                 variant="standard" 
-                value={lotteryName}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setLotteryName(event.target.value);
-                }}/>
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.name && Boolean(formik.errors.name)}
+                helperText={formik.touched.name && formik.errors.name}
+              />
               <TextField 
-                required
                 label="Lottery prize" 
                 variant="standard" 
-                value={lotteryPrize}
-                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                  setLotteryPrize(event.target.value);
-                }}/>              
-                <Button 
-                  variant="contained"
-                  type='submit'>
-                  New
-                </Button>
+                name="prize"
+                value={formik.values.prize}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={formik.touched.prize && Boolean(formik.errors.prize)}
+                helperText={formik.touched.prize && formik.errors.prize}
+              />
+              <Button variant="contained" type="submit">
+                New
+              </Button>
             </Stack>
           </Box>
         </Modal>
