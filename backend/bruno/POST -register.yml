@@ -1,0 +1,22 @@
+info:
+  name: POST /register
+  type: http
+  seq: 4
+
+http:
+  method: POST
+  url: "{{base}}/register"
+  body:
+    type: json
+    data: |-
+      {
+        "lotteryId": "{{id}}",
+        "name": "John Doe"
+      }
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
