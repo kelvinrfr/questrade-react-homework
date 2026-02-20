@@ -1,5 +1,11 @@
-// Reads the API base URL from the .env file (VITE_API_URL=http://localhost:3000)
-// import.meta.env is how Vite exposes environment variables to the frontend
+export interface Lottery {
+  id: string;
+  name: string;
+  prize: string;
+  type: string;
+  status: 'running' | 'finished';
+}
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 // async because fetch() returns a Promise — we need to await the network response
@@ -23,7 +29,30 @@ export async function createLotteryAsync(name: string, prize: string) {
     throw new Error(errorData.error || 'Failed to create lottery');
   }
 
-  // Parse and return the successful response body as a JS object
-  // This will be the Lottery object: { id, name, prize, type, status }
+  return await response.json();
+}
+
+export async function fetchLotteriesAsync(): Promise<Lottery[]> {
+  const response = await fetch(`${API_URL}/lotteries`);
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch lotteries');
+  }
+
+  return await response.json();
+}
+
+export async function registerForLotteryAsync(lotteryId: string, name: string) {
+  const response = await fetch(`${API_URL}/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ lotteryId, name }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || 'Failed to register');
+  }
+
   return await response.json();
 }
