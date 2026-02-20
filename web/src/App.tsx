@@ -1,4 +1,4 @@
-import { Box, Button, Modal, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Modal, Snackbar, Stack, TextField, Typography } from '@mui/material';
 import { Add } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
@@ -26,11 +26,15 @@ function App() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const [openToast, setOpenToast] = React.useState(false);
+
   const formik = useFormik({
     initialValues: { name: '', prize: '' },
     validationSchema,
     onSubmit: (values) => {
       console.log(`These are the values: ${values.name}, ${values.prize}`);
+      
+      setOpenToast(true);
     },
   });
 
@@ -88,6 +92,12 @@ function App() {
             </Stack>
           </Box>
         </Modal>
+        <Snackbar
+          open={openToast}
+          autoHideDuration={2000}
+          onClose={() => setOpenToast(false)}
+          message="Lottery added successfully"
+        />
       </div>
     </>
   );
