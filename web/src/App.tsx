@@ -1,6 +1,6 @@
 import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
-import { Add, Casino } from '@mui/icons-material';
+import { Box, Button, InputAdornment, TextField, Typography } from '@mui/material';
+import { Add, Casino, Search } from '@mui/icons-material';
 import AddLotteryModal from './components/AddLotteryModal';
 import RegisterModal from './components/RegisterModal';
 import LotteryList from './components/LotteryList';
@@ -12,6 +12,7 @@ function App() {
   const [loading, setLoading] = React.useState(true);
   const [selectedIds, setSelectedIds] = React.useState<string[]>([]);
 
+  const [filter, setFilter] = React.useState('');
   const [openAddModal, setOpenAddModal] = React.useState(false);
   const [openRegisterModal, setOpenRegisterModal] = React.useState(false);
   const [toast, setToast] = React.useState({ open: false, message: '' });
@@ -43,17 +44,42 @@ function App() {
     setSelectedIds([]);
   };
 
+  const filteredLotteries = lotteries.filter((l) =>
+    l.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <Box sx={{ pb: 10 }}>
       <Typography variant="h3" align="center" sx={{ mt: 4 }}>
         Lotteries <Casino fontSize="large" />
       </Typography>
 
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3, px: 4 }}>
+        <TextField
+          placeholder="Search lotteries"
+          variant="outlined"
+          size="small"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ width: 300 }}
+        />
+      </Box>
+
       <LotteryList
-        lotteries={lotteries}
+        lotteries={filteredLotteries}
         loading={loading}
         selectedIds={selectedIds}
         onSelect={handleSelect}
+        hasFilter={filter.length > 0}
       />
 
       <AddLotteryModal
