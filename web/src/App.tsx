@@ -3,6 +3,7 @@ import { Add } from '@mui/icons-material';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 import React from 'react';
+import { createLotteryAsync } from './services/LotteryService';
 
 const style = {
   position: 'absolute',
@@ -22,19 +23,26 @@ const validationSchema = yup.object({
 });
 
 function App() {
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const [open, setOpenModal] = React.useState(false);
+  const handleOpen = () => setOpenModal(true);
+  const handleClose = () => setOpenModal(false);
 
   const [openToast, setOpenToast] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const formik = useFormik({
     initialValues: { name: '', prize: '' },
     validationSchema,
     onSubmit: (values) => {
       console.log(`These are the values: ${values.name}, ${values.prize}`);
-      
-      setOpenToast(true);
+      setIsLoading(true);
+      createLotteryAsync(values.name, values.prize)
+        .then(() =>{
+          setOpenToast(true);
+          setOpenModal(false);
+        }).finally(() => {
+          setIsLoading(false);
+        });
     },
   });
 
@@ -86,7 +94,10 @@ function App() {
                 error={formik.touched.prize && Boolean(formik.errors.prize)}
                 helperText={formik.touched.prize && formik.errors.prize}
               />
-              <Button variant="contained" type="submit">
+              <Button 
+                variant="contained" 
+                type="submit"
+                loading={isLoading}>
                 New
               </Button>
             </Stack>
