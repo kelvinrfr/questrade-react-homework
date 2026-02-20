@@ -1,5 +1,5 @@
 import { Box, CircularProgress, Grid, Typography } from '@mui/material';
-import { SentimentDissatisfied } from '@mui/icons-material';
+import { SentimentDissatisfied, SearchOff } from '@mui/icons-material';
 import type { Lottery } from '../services/LotteryService';
 import LotteryCard from './LotteryCard';
 
@@ -8,13 +8,23 @@ interface LotteryListProps {
   loading: boolean;
   selectedIds: string[];
   onSelect: (id: string) => void;
+  hasFilter?: boolean;
 }
 
-export default function LotteryList({ lotteries, loading, selectedIds, onSelect }: LotteryListProps) {
+export default function LotteryList({ lotteries, loading, selectedIds, onSelect, hasFilter }: LotteryListProps) {
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
         <CircularProgress size={60} />
+      </Box>
+    );
+  }
+
+  if (lotteries.length === 0 && hasFilter) {
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mt: 4 }}>
+        <SearchOff fontSize="large" />
+        <Typography variant="h6">No lotteries match your search</Typography>
       </Box>
     );
   }
